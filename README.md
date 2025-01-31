@@ -78,14 +78,96 @@ python app.py
 ```
 By default, the app will run on `http://127.0.0.1:5001`.
 
-### 7. Access the Application
+### 7. Setting Up Flask API with Nginx
+
+### Prerequisites
+
+- Nginx installed (`sudo apt install nginx`).
+
+---
+
+
+###  Configure Nginx
+
+ **Create an Nginx Configuration File:**
+   Open a new file in the `sites-available` directory:
+   ```bash
+   sudo nano /etc/nginx/sites-available/chatbot_flask_app
+   ```
+
+ **Add the Following Configuration:**
+   ```nginx
+   server {
+       listen 80;
+       server_name yourdomain.com;
+
+       location /chat {
+           proxy_pass http://127.0.0.1:5001;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+
+       location /generate_chat {
+           proxy_pass http://127.0.0.1:5001;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+
+       location /static/style.css {
+           proxy_pass http://127.0.0.1:5001;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+
+       location /static/script.js {
+           proxy_pass http://127.0.0.1:5001;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+   }
+   ```
+
+ **Enable the Configuration:**
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/chatbot_flask_app/etc/nginx/sites-enabled/
+   ```
+
+ **Test the Configuration:**
+   ```bash
+   sudo nginx -t
+   ```
+   If there are no errors, reload Nginx:
+   ```bash
+   sudo systemctl reload nginx
+   ```
+
+---
+
+### Test the Setup
+
+1. Visit `http://yourdomain.com/chat` or `http://yourserverip/chat` and make a POST request to test the endpoint.
+2. Check the `/generate_chat`, `/static/style.css`, and `/static/script.js` endpoints similarly.
+
+---
+
+
+
+### 8. Access the Application
 - If running locally, open your browser and navigate to:
   ```
   http://127.0.0.1:5001/chat
   ```
 - If running from a server, open your browser and navigate to:
   ```
-  https://your_server_domain/chat
+  https://yourdomain.com/chat
   ```
 
 ---
